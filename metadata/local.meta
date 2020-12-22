@@ -1,0 +1,39 @@
+[app/ui]
+version = 8.0.5
+modtime = 1608569166.428308000
+
+[app/launcher]
+version = 8.0.5
+modtime = 1608569166.432048000
+
+[views/event_monitoring]
+owner = admin
+version = 8.1.1
+modtime = 1608644150.621231000
+
+[nav/default]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = nobody
+version = 8.1.1
+modtime = 1608640004.406633000
+
+[views/failed_logons]
+owner = admin
+version = 8.1.1
+modtime = 1608638520.815610000
+
+[views/event_types]
+owner = admin
+version = 8.0.5
+modtime = 1608633044.550833000
+
+[views/computer_overview]
+owner = admin
+version = 8.1.1
+modtime = 1608639862.131792000
+
+[views/groups_overview]
+owner = admin
+version = 8.1.1
+modtime = 1608639941.131807000

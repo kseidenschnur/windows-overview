@@ -1,0 +1,96 @@
+<form>
+  <label>Failed Logons</label>
+  <fieldset submitButton="false">
+    <input type="multiselect" token="host">
+      <label>Host</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <valuePrefix>host=</valuePrefix>
+      <delimiter>  OR </delimiter>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <search>
+        <query>eventtype=wineventlog_windows | stats count by host | table host</query>
+        <earliest>-4h@m</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="multiselect" token="user">
+      <label>User</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <valuePrefix>user=</valuePrefix>
+      <delimiter>  OR </delimiter>
+      <fieldForLabel>user</fieldForLabel>
+      <fieldForValue>user</fieldForValue>
+      <search>
+        <query>eventtype=wineventlog_windows | stats count by user | table user</query>
+        <earliest>-4h@m</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="time" token="tr_picker">
+      <label>Time Range</label>
+      <default>
+        <earliest>-4h@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <chart>
+        <title>Failed Logons over Time</title>
+        <search>
+          <query>eventtype=windows_logon_failure dest_nt_domain!="NT AUTHORITY" $host$ $user$ | timechart count by signature</query>
+          <earliest>$tr_picker.earliest$</earliest>
+          <latest>$tr_picker.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Failed Logons by IP Address</title>
+        <search>
+          <query>eventtype=windows_logon_failure dest_nt_domain!="NT AUTHORITY" $host$ $user$ | timechart count by src_ip</query>
+          <earliest>$tr_picker.earliest$</earliest>
+          <latest>$tr_picker.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Failed Logons by Reason</title>
+        <search>
+          <query>eventtype=windows_logon_failure dest_nt_domain!="NT AUTHORITY" $host$ $user$ | stats count by signature</query>
+          <earliest>$tr_picker.earliest$</earliest>
+          <latest>$tr_picker.latest$</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Failed Logons by Username</title>
+        <search>
+          <query>eventtype=windows_logon_failure dest_nt_domain!="NT AUTHORITY" $host$ $user$ | stats count by user</query>
+          <earliest>$tr_picker.earliest$</earliest>
+          <latest>$tr_picker.latest$</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

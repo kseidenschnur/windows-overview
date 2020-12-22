@@ -1,0 +1,19 @@
+<dashboard>
+  <label>Event Types</label>
+  <row>
+    <panel>
+      <table>
+        <title>Event Types Overview</title>
+        <search>
+          <query>| rest servicesNS/-/-/saved/eventtypes| search eai:acl.app=Splunk_TA_windows | table title | rename title as "Event Type"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <drilldown>
+          <link target="_blank">search?q=eventtype%3D$click.value$&amp;earliest=-60m@m&amp;latest=now</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+</dashboard>

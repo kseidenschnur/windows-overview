@@ -1,0 +1,105 @@
+<form>
+  <label>Event Monitoring</label>
+  <fieldset submitButton="false">
+    <input type="multiselect" token="host">
+      <label>Host</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <search>
+        <query>eventtype=wineventlog_windows | stats count by host | table host</query>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </search>
+      <valuePrefix>host=</valuePrefix>
+      <delimiter> OR </delimiter>
+    </input>
+    <input type="multiselect" token="tk_source">
+      <label>Source</label>
+      <choice value="*">All</choice>
+      <initialValue>*</initialValue>
+      <delimiter> </delimiter>
+      <fieldForLabel>source</fieldForLabel>
+      <fieldForValue>source</fieldForValue>
+      <search>
+        <query>eventtype=wineventlog_windows host=* EventCode=* | stats count by source | table source</query>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="multiselect" token="tk_evtcode">
+      <label>Event Code</label>
+      <choice value="*">All</choice>
+      <initialValue>*</initialValue>
+      <delimiter> </delimiter>
+      <fieldForLabel>EventCode</fieldForLabel>
+      <fieldForValue>EventCode</fieldForValue>
+      <search>
+        <query>eventtype=wineventlog_windows host=* EventCode=* | stats count by EventCode | table EventCode</query>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="time" token="tr_picker">
+      <label>Time Range</label>
+      <default>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <table>
+        <title>Hosts</title>
+        <search>
+          <query>eventtype=wineventlog_windows $host$ EventCode=* | stats sparkline as "Trend", count by host</query>
+          <earliest>$tr_picker.earliest$</earliest>
+          <latest>$tr_picker.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Event Codes</title>
+        <search>
+          <query>eventtype=wineventlog_windows $host$ EventCode=* | stats sparkline as "Trend", count by EventCode, signature | sort -count</query>
+          <earliest>$tr_picker.earliest$</earliest>
+          <latest>$tr_picker.latest$</latest>
+        </search>
+        <option name="drilldown">cell</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Event Count By Hosts - Over Time</title>
+        <search>
+          <query>eventtype=wineventlog_windows $host$ EventCode=* | timechart span=1m count by host</query>
+          <earliest>$tr_picker.earliest$</earliest>
+          <latest>$tr_picker.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Event Count By Event Code - Over Time</title>
+        <search>
+          <query>eventtype="wineventlog_windows" $host$ | timechart span=1m count by EventCode</query>
+          <earliest>$tr_picker.earliest$</earliest>
+          <latest>$tr_picker.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

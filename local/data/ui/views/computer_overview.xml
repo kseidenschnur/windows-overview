@@ -1,0 +1,15 @@
+<dashboard>
+  <label>Computer Overview</label>
+  <row>
+    <panel>
+      <event>
+        <search>
+          <query>eventtype=windows_common</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="list.drilldown">none</option>
+      </event>
+    </panel>
+  </row>
+</dashboard>
