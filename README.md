@@ -1,3 +1,3 @@
 # windows-overview
 
-This App is intended to be App conatining some simple Windows Overview Dashboards based on the lates available Windows-TA.
+This App is conatining some simple Windows Overview dashboards based on the latest available Windows-TA.
