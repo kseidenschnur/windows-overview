@@ -83,7 +83,7 @@
           <earliest>$tr_picker.earliest$</earliest>
           <latest>$tr_picker.latest$</latest>
         </search>
-        <option name="charting.chart">column</option>
+        <option name="charting.chart">area</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
       </chart>
@@ -96,7 +96,7 @@
           <earliest>$tr_picker.earliest$</earliest>
           <latest>$tr_picker.latest$</latest>
         </search>
-        <option name="charting.chart">column</option>
+        <option name="charting.chart">area</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
       </chart>

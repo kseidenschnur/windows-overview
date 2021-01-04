@@ -3,13 +3,20 @@
   <row>
     <panel>
       <table>
-        <title>Event Types Overview</title>
         <search>
-          <query>| rest servicesNS/-/-/saved/eventtypes| search eai:acl.app=Splunk_TA_windows | table title | rename title as "Event Type"</query>
+          <query>| rest servicesNS/-/-/saved/eventtypes | search eai:acl.app = Splunk_TA_windows | table title | rename title as "Event Type"</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
         </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
         <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
         <drilldown>
           <link target="_blank">search?q=eventtype%3D$click.value$&amp;earliest=-60m@m&amp;latest=now</link>
         </drilldown>

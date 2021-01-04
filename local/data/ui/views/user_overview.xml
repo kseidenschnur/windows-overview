@@ -1,16 +1,15 @@
 <form>
-  <label>Failed Logons</label>
+  <label>User Overview</label>
   <fieldset submitButton="false">
     <input type="multiselect" token="host">
       <label>Host</label>
       <choice value="*">All</choice>
-      <default>*</default>
-      <valuePrefix>host=</valuePrefix>
-      <delimiter>  OR </delimiter>
+      <delimiter> </delimiter>
       <fieldForLabel>host</fieldForLabel>
       <fieldForValue>host</fieldForValue>
+      <default>*</default>
       <search>
-        <query>eventtype=wineventlog_windows | stats count by host | table host</query>
+        <query>(eventtype=windows_logon_failure OR eventtype=windows_logon_success) | stats count by host | table host</query>
         <earliest>-4h@m</earliest>
         <latest>now</latest>
       </search>
@@ -18,13 +17,12 @@
     <input type="multiselect" token="user">
       <label>User</label>
       <choice value="*">All</choice>
-      <default>*</default>
-      <valuePrefix>user=</valuePrefix>
-      <delimiter>  OR </delimiter>
+      <delimiter> </delimiter>
       <fieldForLabel>user</fieldForLabel>
       <fieldForValue>user</fieldForValue>
+      <default>*</default>
       <search>
-        <query>eventtype=wineventlog_windows | stats count by user | table user</query>
+        <query>(eventtype=windows_logon_failure OR eventtype=windows_logon_success) | stats count by user | table user</query>
         <earliest>-4h@m</earliest>
         <latest>now</latest>
       </search>
@@ -40,57 +38,54 @@
   <row>
     <panel>
       <chart>
-        <title>Failed Logons over Time</title>
+        <title>Logons over Time</title>
         <search>
-          <query>eventtype=windows_logon_failure $host$ $user$ | timechart count by signature</query>
+          <query>(eventtype=windows_logon_failure OR eventtype=windows_logon_success) $host$ $user$ | fillnull value="255" Logon_Type | lookup LogonTypeName Logon_Type | timechart count by Logon_TypeName span=1m</query>
           <earliest>$tr_picker.earliest$</earliest>
           <latest>$tr_picker.latest$</latest>
         </search>
-        <option name="charting.chart">column</option>
+        <option name="charting.chart">area</option>
         <option name="charting.drilldown">none</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
     <panel>
-      <chart>
-        <title>Failed Logons by IP Address</title>
+      <table>
+        <title>Top Users by Successful Logons</title>
         <search>
-          <query>eventtype=windows_logon_failure $host$ $user$ | timechart count by src_ip</query>
+          <query>eventtype=windows_logon_success $ $host$ $user$ | top user dest_nt_domain</query>
           <earliest>$tr_picker.earliest$</earliest>
           <latest>$tr_picker.latest$</latest>
         </search>
-        <option name="charting.chart">column</option>
-        <option name="charting.drilldown">none</option>
+        <option name="drilldown">none</option>
         <option name="refresh.display">progressbar</option>
-      </chart>
+      </table>
     </panel>
   </row>
   <row>
     <panel>
-      <chart>
-        <title>Failed Logons by Reason</title>
+      <table>
+        <title>Locked Accounts</title>
         <search>
-          <query>eventtype=windows_logon_failure $host$ $user$ | stats count by signature</query>
+          <query>eventtype=windows_account_lockout $host$ $user$ | table _time,dest_nt_domain,user,host</query>
           <earliest>$tr_picker.earliest$</earliest>
           <latest>$tr_picker.latest$</latest>
         </search>
-        <option name="charting.chart">bar</option>
-        <option name="charting.drilldown">none</option>
+        <option name="drilldown">none</option>
         <option name="refresh.display">progressbar</option>
-      </chart>
+      </table>
     </panel>
     <panel>
-      <chart>
-        <title>Failed Logons by Username</title>
+      <table>
+        <title>Top Authenticating Workstations</title>
         <search>
-          <query>eventtype=windows_logon_failure $host$ $user$ | stats count by user</query>
+          <query>(eventtype=windows_logon_failure OR eventtype=windows_logon_success) $host$ $user$ | top src_nt_host | rename src_nt_host as Workstation</query>
           <earliest>$tr_picker.earliest$</earliest>
           <latest>$tr_picker.latest$</latest>
         </search>
-        <option name="charting.chart">bar</option>
-        <option name="charting.drilldown">none</option>
+        <option name="drilldown">none</option>
         <option name="refresh.display">progressbar</option>
-      </chart>
+      </table>
     </panel>
   </row>
 </form>
