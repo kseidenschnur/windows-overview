@@ -1,0 +1,91 @@
+<form>
+  <label>User Overview</label>
+  <fieldset submitButton="false">
+    <input type="multiselect" token="host">
+      <label>Host</label>
+      <choice value="*">All</choice>
+      <delimiter> </delimiter>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <default>*</default>
+      <search>
+        <query>(eventtype=windows_logon_failure OR eventtype=windows_logon_success) | stats count by host | table host</query>
+        <earliest>-4h@m</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="multiselect" token="user">
+      <label>User</label>
+      <choice value="*">All</choice>
+      <delimiter> </delimiter>
+      <fieldForLabel>user</fieldForLabel>
+      <fieldForValue>user</fieldForValue>
+      <default>*</default>
+      <search>
+        <query>(eventtype=windows_logon_failure OR eventtype=windows_logon_success) | stats count by user | table user</query>
+        <earliest>-4h@m</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="time" token="tr_picker">
+      <label>Time Range</label>
+      <default>
+        <earliest>-4h@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <chart>
+        <title>Logons over Time</title>
+        <search>
+          <query>(eventtype=windows_logon_failure OR eventtype=windows_logon_success) $host$ $user$ | fillnull value="255" Logon_Type | lookup logon_type Logon_Type | timechart count by Logon_TypeName span=1m</query>
+          <earliest>$tr_picker.earliest$</earliest>
+          <latest>$tr_picker.latest$</latest>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <table>
+        <title>Top Users by Successful Logons</title>
+        <search>
+          <query>eventtype=windows_logon_success $ $host$ $user$ | top user dest_nt_domain</query>
+          <earliest>$tr_picker.earliest$</earliest>
+          <latest>$tr_picker.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Locked Accounts</title>
+        <search>
+          <query>eventtype=windows_account_lockout $host$ $user$ | table _time,dest_nt_domain,user,host</query>
+          <earliest>$tr_picker.earliest$</earliest>
+          <latest>$tr_picker.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Top Authenticating Workstations</title>
+        <search>
+          <query>(eventtype=windows_logon_failure OR eventtype=windows_logon_success) $host$ $user$ | top src_nt_host | rename src_nt_host as Workstation</query>
+          <earliest>$tr_picker.earliest$</earliest>
+          <latest>$tr_picker.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>
