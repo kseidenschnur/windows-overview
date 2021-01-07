@@ -53,7 +53,7 @@
       <table>
         <title>Top Users by Successful Logons</title>
         <search>
-          <query>eventtype=windows_logon_success $ $host$ $user$ | top user dest_nt_domain</query>
+          <query>eventtype=windows_logon_success $host$ $user$ | top user dest_nt_domain</query>
           <earliest>$tr_picker.earliest$</earliest>
           <latest>$tr_picker.latest$</latest>
         </search>

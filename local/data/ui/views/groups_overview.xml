@@ -1,0 +1,82 @@
+<form>
+  <label>Groups Overview</label>
+  <description>This dashboard is based on the Splunk Supporting Add-on for Active Directory</description>
+  <fieldset submitButton="false">
+    <input type="text" token="tk_domain" searchWhenChanged="true">
+      <label>Please enter domain name:</label>
+      <default>default</default>
+      <initialValue>default</initialValue>
+    </input>
+    <input type="text" token="tk_group">
+      <label>Group Name</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <single>
+        <title>Group Count</title>
+        <search>
+          <query>|ldapsearch domain=$tk_domain$ search="(objectclass=group)" | stats count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Group with highest memberCount</title>
+        <search>
+          <query>|ldapsearch domain=default search="(&amp;(objectClass=group)(cn=*))" | eval memberCount=mvcount(member) | sort - memberCount | head 1 | table cn groupType memberOf memberCount whenChanged whenCreated</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+      </panel>
+      <panel>
+      <single>
+        <title>Member count</title>
+        <search>
+          <query>|ldapsearch domain=default search="(&amp;(objectClass=group)(cn=*))" | eval memberCount=mvcount(member) | sort - memberCount | head 1 | table memberCount</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Group Listing</title>
+      <table>
+        <title>Click on Group Name for more details!</title>
+        <search>
+          <query>|ldapsearch domain=$tk_domain$ search="(&amp;(objectClass=group)(cn=$tk_group$))" | eval memberCount=mvcount(member) | table cn description groupType memberOf memberCount whenChanged whenCreated</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <drilldown>
+          <condition field="description">
+          </condition>
+          <condition field="groupType">
+          </condition>
+          <condition field="memberOf">
+          </condition>
+          <condition field="memberCount">
+          </condition>
+          <condition field="whenChanged">
+          </condition>
+          <condition field="whenCreated">
+          </condition>
+          <condition field="cn">
+            <link target="_blank">/app/windows-overview/group_details?form.tk_group=$click.value2$&amp;form.tk_domain=$tk_domain$</link>
+          </condition>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+</form>

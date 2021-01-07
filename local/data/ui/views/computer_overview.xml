@@ -1,0 +1,36 @@
+<form>
+  <label>Computer Overview</label>
+  <description>This dashboard is based on the Splunk Supporting Add-on for Active Directory</description>
+  <fieldset submitButton="false">
+    <input type="text" token="tk_domain" searchWhenChanged="true">
+      <label>Please enter domain name:</label>
+      <default>default</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <single>
+        <title>Computer Count</title>
+        <search>
+          <query>|ldapsearch domain=$tk_domain$ search="(objectclass=computer)" | stats count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+    <panel>
+      <table>
+        <title>Group Membership - Computer</title>
+        <search>
+          <query>|ldapsearch domain=$tk_domain$ search="(objectclass=group)" attrs="cn,description,primaryGroupToken"|eval joiner=mvappend(dn,primaryGroupToken)|rename dn as groupDN,cn as groupName,primaryGroupToken as primaryGroupID|table groupDN,groupName,primaryGroupID,joiner|mvexpand joiner|join type=inner joiner [ldapsearch domain=$tk_domain$ search="(&amp;(objectclass=computer)(|(cn=*)(sAMAccountName=*)))" attrs="memberOf,primaryGroupID"|eval joiner=mvappend(memberOf,primaryGroupID)|table joiner|mvexpand joiner]|dedup groupDN|table groupDN,groupName,primaryGroupID|sort primaryGroupID</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

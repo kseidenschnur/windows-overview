@@ -1,0 +1,17 @@
+<dashboard>
+  <label>Active Directory Overview</label>
+  <description>This dashboard is based on the MSAD:NT6:Health powershell input</description>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>eventtype=msad-dc-health | eval DomainNetBIOSName=upper(DomainNetBIOSName)|eval DomainDNSName=lower(DomainDNSName)|dedup host,DomainDNSName|sort ForestName,Site,DomainDNSName,host|eval DomainTitle="Forest: ".ForestName." (".ForestLevel."), Domain: ".DomainNetBIOSName."\\\\".DomainDNSName." (".DomainLevel.")", "Master Roles"=split(FSMORoles," "), Host=host, "Operating System"=OperatingSystem, Version=OSVersion, "Global Catalog"=GlobalCatalog, Services=ProcsOK, "DNS Registration"=DNSRegister, "SYSVOL Shared"=SYSVOLShare| dedup Host | table Host, Enabled, Site, "Operating System", Version, "Master Roles", "Global Catalog", RODC, Services, "DNS Registration", "SYSVOL Shared"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>

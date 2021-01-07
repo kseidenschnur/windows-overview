@@ -1,0 +1,123 @@
+<form>
+  <label>Group Details</label>
+  <fieldset submitButton="false">
+    <input type="text" token="tk_domain" searchWhenChanged="true">
+      <label>Domain Name</label>
+      <default>default</default>
+      <initialValue>default</initialValue>
+    </input>
+    <input type="text" token="tk_group" searchWhenChanged="true">
+      <label>Group Name</label>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <single>
+        <title>Group Name</title>
+        <search>
+          <query>|ldapsearch domain=$tk_domain$ search="(&amp;(objectClass=group)(cn=$tk_group$))" | table cn</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+
+
+
+      <single>
+        <title>Distinguished Name</title>
+        <search>
+          <query>|ldapsearch domain=$tk_domain$ search="(&amp;(objectClass=group)(cn=$tk_group$))" | table distinguishedName</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+
+
+ 
+      <single>
+        <title>Mail contact</title>
+        <search>
+          <query>|ldapsearch domain=$tk_domain$ search="(&amp;(objectClass=group)(cn=$tk_group$))" | table mail</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Group Type</title>
+        <search>
+          <query>|ldapsearch domain=$tk_domain$ search="(&amp;(objectClass=group)(cn=$tk_group$))" | table groupType</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Dates</title>
+        <search>
+          <query>|ldapsearch domain=$tk_domain$ search="(&amp;(objectClass=group)(cn=$tk_group$))" | table whenCreated whenChanged</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Member Count</title>
+        <search>
+          <query>|ldapsearch domain=$tk_domain$ search="(&amp;(objectClass=group)(cn=$tk_group$))" | eval memberCount=mvcount(member) | table memberCount</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Member of</title>
+        <search>
+          <query>|ldapsearch domain=$tk_domain$ search="(&amp;(objectClass=group)(cn=$tk_group$))" | eval memberCount=mvcount(memberOf) | table memberCount</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>|ldapsearch domain=$tk_domain$ search="(&amp;(objectClass=group)(cn=$tk_group$))" | table member</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <search>
+          <query>|ldapsearch domain=$tk_domain$ search="(&amp;(objectClass=group)(cn=$tk_group$))" | table memberOf</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</form>
